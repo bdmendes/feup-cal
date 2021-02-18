@@ -8,15 +8,22 @@ bool Activity::operator==(const Activity &a2) const {
 }
 
 bool Activity::operator<(const Activity &a2) const {
-    return finish < a2.finish;
+    return start < a2.start;
+}
+
+std::vector<Activity> makeSchedule(std::vector<Activity> A){
+    if (A.empty()) return std::vector<Activity>();
+    std::vector<Activity> allowed = {A.at(0)};
+    std::vector<Activity> nonOverlapping;
+    for (int i = 1; i < A.size(); ++i) if (A.at(i).start >= allowed.at(0).finish) nonOverlapping.push_back(A.at(i));
+    auto scan = makeSchedule(nonOverlapping);
+    for (const auto& a : scan) allowed.push_back(a);
+    return allowed;
 }
 
 std::vector<Activity> earliestFinishScheduling(std::vector<Activity> A) {
-    //TODO...
-
-    std::vector<Activity> res;
-
-    return res;
+    std::sort(A.begin(),A.end());
+    return makeSchedule(A);
 }
 
 /// TESTS ///

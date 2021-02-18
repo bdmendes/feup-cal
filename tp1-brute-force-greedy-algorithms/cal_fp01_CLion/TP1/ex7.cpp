@@ -6,9 +6,15 @@
 #include <vector>
 
 double minimumAverageCompletionTime(std::vector<unsigned int> tasks, std::vector<unsigned int> &orderedTasks) {
-    //TODO...
-
-    return 0.0;
+    // Finish tasks with the best average closer time to the starting time
+    orderedTasks = tasks;
+    std::sort(orderedTasks.begin(),orderedTasks.end());
+    double sum = 0.0f, lastTaskDiff = 0.0f;
+    for (const auto& t: orderedTasks){
+        sum += lastTaskDiff + t;
+        lastTaskDiff += t;
+    }
+    return sum / tasks.size();
 }
 
 /// TESTS ///
