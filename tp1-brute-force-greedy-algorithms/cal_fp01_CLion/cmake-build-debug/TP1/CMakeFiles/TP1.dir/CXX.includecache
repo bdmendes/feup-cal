@@ -330,9 +330,15 @@ cxxabi.h
 acxx_demangle.h
 -
 
-/home/bdmendes/Documents/Faculdade/2ano-2S/CAL/feup-cal/tp1-brute-force-greedy-algorithms/cal_fp01_CLion/TP1/ex2.cpp
+/home/bdmendes/Documents/Faculdade/2ano-2S/CAL/feup-cal/tp1-brute-force-greedy-algorithms/cal_fp01_CLion/TP1/ex3.cpp
 exercises.h
 /home/bdmendes/Documents/Faculdade/2ano-2S/CAL/feup-cal/tp1-brute-force-greedy-algorithms/cal_fp01_CLion/TP1/exercises.h
+vector
+-
+iostream
+-
+algorithm
+-
 gtest/gtest.h
 -
 
