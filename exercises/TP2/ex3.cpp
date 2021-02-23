@@ -1,8 +1,45 @@
 #include "exercises.h"
 
+bool changeMakingBacktrackingRec(unsigned int C[], unsigned int Stock[], unsigned int n, unsigned int T,
+                                 unsigned curIndex, unsigned &curBestNumberOfCoins, unsigned curCoins[], unsigned bestCoins[]){
+    if (curIndex >= n - 1){
+        return T == 0;
+    }
+
+    // Try to add one more coin
+    bool foundWithCoin = false;
+    if (curCoins[curIndex] < Stock[curIndex]){
+        curCoins[curIndex]++;
+        foundWithCoin = changeMakingBacktrackingRec(C,Stock,n,T - C[curIndex], curIndex, curBestNumberOfCoins, curCoins, bestCoins);
+
+        // Check if found solution is the best yet
+        if (foundWithCoin){
+            unsigned used = 0;
+            for (unsigned i = 0; i < n; ++i) used += curCoins[i];
+            if (used < curBestNumberOfCoins){
+                for (unsigned i = 0; i < n; ++i) bestCoins[i] = curCoins[i];
+                curBestNumberOfCoins = used;
+            }
+        }
+
+        // Reset curCoins for the next call
+        curCoins[curIndex]--;
+    }
+
+    // Try to switch to the next coin
+    bool foundWithoutCoin = changeMakingBacktrackingRec(C,Stock,n,T,curIndex+1, curBestNumberOfCoins, curCoins, bestCoins);
+
+    return foundWithCoin || foundWithoutCoin;
+}
+
 bool changeMakingBacktracking(unsigned int C[], unsigned int Stock[], unsigned int n, unsigned int T, unsigned int usedCoins[]) {
-    //TODO
-	return false;
+    unsigned minCoins = 99999;
+    unsigned currCandidate[n];
+    for (unsigned i = 0; i < n; ++i){
+        currCandidate[i] = 0;
+        usedCoins[i] = 0;
+    }
+    return changeMakingBacktrackingRec(C, Stock, n, T, 0, minCoins, currCandidate, usedCoins);
 }
 
 /// TESTS ///
