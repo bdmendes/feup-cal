@@ -1,4 +1,5 @@
 #include "exercises.h"
+#include <utility>
 
 Labyrinth::Labyrinth(int values[10][10]) {
     for (int i = 0; i < 10; i++)
@@ -8,7 +9,7 @@ Labyrinth::Labyrinth(int values[10][10]) {
 
 #include <iostream>
 
-void  Labyrinth::print() const {
+void Labyrinth::print() const {
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             std::cout << labyrinth[i][j] << " ";
@@ -17,9 +18,30 @@ void  Labyrinth::print() const {
     }
 }
 
-bool Labyrinth::findGoal(int x, int y) {
-    //TODO
+bool Labyrinth::findGoalRec(int x, int y){
+    // Base cases
+    if (this->labyrinth[y][x] == 2){
+        return true;
+    }
+    if (y < 0 || y >= 10 || x < 0 || x >= 10 || visited[y][x] || labyrinth[y][x] == 0){
+        return false;
+    }
+
+    // Look in all four directions
+    visited[y][x] = true;
+    for (int yDiff : {-1,0,1}){
+        for (int xDiff : {-1,0,1}){
+            if (abs(xDiff) == abs(yDiff)) continue; // no diagonals or staying in the same place
+            if (findGoalRec(x + xDiff,y + yDiff)) return true;
+        }
+    }
+
     return false;
+}
+
+bool Labyrinth::findGoal(int x, int y) {
+    this->initializeVisited();
+    return this->findGoalRec(x,y);
 }
 
 void Labyrinth::initializeVisited() {
