@@ -23,7 +23,7 @@ bool Labyrinth::findGoalRec(int x, int y){
     if (this->labyrinth[y][x] == 2){
         return true;
     }
-    if (y < 0 || y >= 10 || x < 0 || x >= 10 || visited[y][x] || labyrinth[y][x] == 0){
+    if (y < 0 || y >= 10 || x < 0 || x >= 10 || labyrinth[y][x] == 0){
         return false;
     }
 
@@ -31,7 +31,7 @@ bool Labyrinth::findGoalRec(int x, int y){
     visited[y][x] = true;
     for (int yDiff : {-1,0,1}){
         for (int xDiff : {-1,0,1}){
-            if (abs(xDiff) == abs(yDiff)) continue; // no diagonals or staying in the same place
+            if (abs(xDiff) == abs(yDiff) || visited[y + yDiff][x + xDiff]) continue;
             if (findGoalRec(x + xDiff,y + yDiff)) return true;
         }
     }

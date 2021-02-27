@@ -1,4 +1,5 @@
 #include "exercises.h"
+#include <algorithm>
 
 bool Activity::operator==(const Activity &a2) const {
     return start == a2.start && finish == a2.finish;
@@ -8,9 +9,38 @@ bool Activity::overlaps(const Activity &a2) const {
     return (start < a2.finish) && (a2.start < finish);
 }
 
+void activitySelectionRec(const std::vector<Activity>& activities,
+                          std::vector<Activity>& curChosen, std::vector<Activity>& bestChosen, int curIndex, unsigned& curMax){
+    // Base case
+    if (curIndex == activities.size()){
+        if (curChosen.size() > curMax){
+            curMax = curChosen.size();
+            bestChosen = curChosen;
+        }
+        return;
+    }
+
+    auto curActivity = activities.at(curIndex);
+    auto mayPut = !std::any_of(curChosen.begin(), curChosen.end(), [curActivity](const Activity& a){
+        return a.overlaps(curActivity);
+    });
+
+    // Try to add activity
+    if (mayPut){
+        curChosen.push_back(curActivity);
+        activitySelectionRec(activities, curChosen, bestChosen, curIndex + 1, curMax);
+        curChosen.pop_back(); // undo for skip call
+    }
+
+    // Try to discard activity
+    activitySelectionRec(activities, curChosen, bestChosen, curIndex + 1, curMax);
+}
+
 std::vector<Activity> activitySelectionBacktracking(std::vector<Activity> A) {
-    //TODO
-    return A;
+    std::vector<Activity> curChosen, bestChosen;
+    unsigned curMax = 0;
+    activitySelectionRec(A, curChosen, bestChosen, 0, curMax);
+    return bestChosen;
 }
 
 /// TESTS ///
