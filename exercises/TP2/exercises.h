@@ -71,6 +71,12 @@ public:
      * Prints the solution.
      */
     void print() const;
+
+    /**
+     * Solve without a greedy optimization, ie. choosing from the first unfilled cell.
+     * @return
+     */
+    bool solveNoGreedy();
 private:
     /**
      * numbers[i][j] - number that occupies line i, column j (from 0 to 8)
@@ -105,7 +111,14 @@ private:
      * Clears the whole puzzle
      */
     void clear();
-	//TODO: Add other methods if needed
+
+    /**
+     * Auxiliar function for the greedy solve() to find the best unfilled cell.
+     * @param row best line
+     * @param col best col
+     * return found cell
+     */
+    bool bestCellToFillIn(int& row, int& col) const;
 };
 
 // Ex 3
