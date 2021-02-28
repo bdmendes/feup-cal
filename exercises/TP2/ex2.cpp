@@ -84,12 +84,36 @@ bool Sudoku::solve() {
 }
 
 int Sudoku::countSolutions() {
-    //TODO
-    return 0;
+    // Base case
+    if (isComplete()){
+        return 1;
+    }
+
+    int count = 0, i = 0, j = 0;
+    if (!bestCellToFillIn(i,j)){
+        return 0;
+    }
+    for (int n = 1; n <= 9; ++n){
+        if (accepts(i,j,n)){
+            place(i,j,n);
+            count += countSolutions();
+            clear(i,j); // reset for next number trial
+            if (count > 50000) break; // too intensive...
+        }
+    }
+    return count;
 }
 
 void Sudoku::generate() {
-	//TODO
+	for (int i = 0; i < 9; ++i){
+	    for (int j = 0; j < 9; ++j){
+	        for (int n = 1; n <= 10; ++n){
+	            place(i,j,n);
+	            if (solve()) break;
+	            clear(i,j);
+	        }
+	    }
+	}
 }
 
 int** Sudoku::getNumbers() {
@@ -454,7 +478,7 @@ TEST(TP2_Ex2, testSudokuWithMinimalClues) {
 
 TEST(TP2_Ex2, testSudokuWithMultipleSolutions) {
     int in[9][9] =
-            {{0/*7*/, 0, 0, 1, 0, 8, 0, 0, 0},
+            {{0, 0, 0, 1, 0, 8, 0, 0, 0},
              {0, 9, 0, 0, 0, 0, 0, 3, 2},
              {0, 0, 0, 0, 0, 5, 0, 0, 0},
              {0, 0, 0, 0, 0, 0, 1, 0, 0},
@@ -513,4 +537,78 @@ TEST(TP2_Ex2, testSudokuImpossible) {
             out[i][a] = res[i][a];
 
     compareSudokus(in, out);
+}
+
+TEST(TP2_Ex2, testSudokuMultipleCountSimple) {
+    int in[9][9] =
+            {{0, 6, 2, 3, 4, 0, 7, 9, 5},
+             {0, 5, 4, 9, 7, 6, 3, 0, 2},
+             {9, 3, 7, 0, 2, 5, 0, 4, 6},
+             {5, 7, 6, 0, 3, 0, 9, 2, 4},
+             {2, 0, 0, 5, 9, 4, 6, 3, 7},
+             {3, 4, 9, 7, 6, 2, 0, 5, 0},
+             {6, 2, 3, 4, 0, 7, 5, 0, 9},
+             {7, 0, 5, 2, 0, 9, 4, 6, 3},
+             {4, 9, 0, 6, 5, 3, 2, 7, 0}};
+
+    // 1 and 8 were deleted from the first example, so that they may be switched
+    for (int i = 0; i < 9; i++)
+        for (int a = 0; a < 9; a++)
+            ASSERT_TRUE(in[i][a] != 1 && in[i][a] != 8);
+
+    Sudoku s(in);
+    EXPECT_EQ(s.countSolutions(),2);
+}
+
+TEST(TP2_Ex2, testSudokuMultipleCountSimple2) {
+    int in[9][9] =
+            { {5, 3, 0, 0, 7, 0, 0, 0, 0},
+              {6, 0, 0, 1, 9, 5, 0, 0, 0},
+              {0, 9, 8, 0, 0, 0, 0, 6, 0},
+              {8, 0, 0, 0, 6, 0, 0, 0, 3},
+              {4, 0, 0, 8, 0, 3, 0, 0, 1},
+              {7, 0, 0, 0, 2, 0, 0, 0, 6},
+              {0, 6, 0, 0, 0, 0, 2, 8, 0},
+              {0, 0, 0, 4, 1, 9, 0, 0, 5},
+              {0, 0, 0, 0, 8, 0, 0, 0, 0} };
+    Sudoku s(in);
+    EXPECT_EQ(s.countSolutions(),2);
+
+    int in2[9][9] =
+            {{2,9,5,7,4,3,8,6,1},
+             {4,3,1,8,6,5,9,0,0},
+             {8,7,6,1,9,2,5,4,3},
+             {3,8,7,4,5,9,2,1,6},
+             {6,1,2,3,8,7,4,9,5},
+             {5,4,9,2,1,6,7,3,8},
+             {7,6,3,5,2,4,1,8,9},
+             {9,2,8,6,7,1,3,5,4},
+             {1,5,4,9,3,8,6,0,0}};
+
+    Sudoku s2(in2);
+    EXPECT_EQ(s2.countSolutions(), 2);
+}
+
+TEST(TP2_Ex2, testSudokuMultipleCountAdvanced) {
+    int in[9][9] =
+            {{5, 0, 0, 1, 0, 8, 0, 0, 0},
+             {0, 9, 0, 0, 0, 0, 0, 3, 2},
+             {0, 0, 0, 0, 0, 5, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 1, 0, 0},
+             {9, 6, 0, 0, 2, 0, 0, 0, 0},
+             {0, 0, 0, 0, 0, 0, 8, 0, 0},
+             {0, 0, 0, 0, 0, 0, 0, 0, 0},
+             {0, 0, 5, 0, 0, 1, 0, 0, 0},
+             {3, 2, 0, 0, 0, 0, 0, 0, 6}};
+
+    Sudoku s(in);
+    EXPECT_EQ(s.countSolutions(), 308);
+}
+
+TEST(TP2_Ex2, testSudokuGenerate){
+    Sudoku s;
+    s.generate();
+    ASSERT_TRUE(s.isComplete());
+    ASSERT_TRUE(s.solve());
+    s.print();
 }
