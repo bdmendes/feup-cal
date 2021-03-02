@@ -79,6 +79,7 @@ int maxSubsequenceDCRec(int A[], int i, int j, int& bestI, int& bestJ, int& curM
 }
 
 int maxSubsequenceDC(int A[], unsigned int n, int &i, int &j) {
+    if (n == 0) return 0;
     int bestI, bestJ, curMax = -99999;
     int max = maxSubsequenceDCRec(A, 0, (int)n-1, bestI, bestJ, curMax);
     i = bestI;
