@@ -15,7 +15,7 @@ int maxCrossingSubsequence(int A[], int i, int j, int& iRes, int& jRes){
     int mid = (i+j)/2;
 
     // Start at mid, and go left to find max
-    int leftSum = 0, maxLeftSum = 0;
+    int leftSum = 0, maxLeftSum = -99999;
     for (int l = mid; l >= 0; --l){
         leftSum += A[l];
         if (leftSum > maxLeftSum){
@@ -25,7 +25,7 @@ int maxCrossingSubsequence(int A[], int i, int j, int& iRes, int& jRes){
     }
 
     // Start after mid, and go right to find max
-    int rightSum = 0, maxRightSum = 0;
+    int rightSum = 0, maxRightSum = -99999;
     for (int l = mid + 1; l <= j; ++l){
         rightSum += A[l];
         if (rightSum > maxRightSum){
