@@ -4,6 +4,8 @@
 #include <thread>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
+#include <pthread.h>
 
 const double MAX_DOUBLE = std::numeric_limits<double>::max();
 
@@ -61,28 +63,128 @@ static void sortByY(std::vector<Point> &v, int left, int right) {
 
 Result nearestPoints_BF(std::vector<Point> &vp) {
     Result res;
-    //TODO
+    double minDistance = 9999999;
+    for (int i = 0; i < vp.size(); ++i){
+        for (int j = i + 1; j < vp.size(); ++j){
+            double distance = vp.at(i).distance(vp.at(j));
+            if (distance < minDistance){
+                minDistance = distance;
+                res = Result(distance, vp.at(i), vp.at(j));
+            }
+        }
+    }
     return res;
 }
 
 Result nearestPoints_BF_SortByX(std::vector<Point> &vp) {
-    Result res;
     sortByX(vp, 0, vp.size()-1);
-    //TODO
-    return res;
+    return nearestPoints_BF(vp);
+}
+
+void nearestPoints_DC_Rec(std::vector<Point> &vpByX, std::vector<Point>& vpByY, Result& bestResult, int i, int j){
+    // Base case
+    if (j - i <= 2){ // do not split small odd sized vectors
+        for (int a = i; a < j; ++a){
+            for (int b = i + 1; b <= j; ++b){
+                double distance = vpByX.at(a).distance(vpByX.at(b));
+                if (distance < bestResult.dmin){
+                    bestResult = Result(distance, vpByX.at(a), vpByX.at(b));
+                }
+            }
+        }
+        return;
+    }
+
+    // Left and right halves
+    int mid = (i + j) / 2;
+    nearestPoints_DC_Rec(vpByX, vpByY, bestResult, i, mid);
+    nearestPoints_DC_Rec(vpByX, vpByY, bestResult, mid + 1, j);
+
+    // Center strip
+    // Cannot call recursive, since minDistance may be bigger than abs(y-midPoint.y)
+    // See property on problem statement on why sorting by Y is used here
+    for (int a = 0; a < vpByY.size(); ++a){
+        for (int b = a + 1; b < vpByY.size(); ++b){
+            if (std::abs(vpByY.at(a).y - vpByY.at(b).y) > bestResult.dmin){
+                break;
+            }
+            else{
+                double distance = vpByY.at(a).distance(vpByY.at(b));
+                if (distance < bestResult.dmin){
+                    bestResult = Result(distance, vpByY.at(a), vpByY.at(b));
+                }
+            }
+        }
+    }
 }
 
 Result nearestPoints_DC(std::vector<Point> &vp) {
-    Result res;
+    Result res(MAX_DOUBLE, Point(0,0), Point(0,0));
+    int i = 0, j = vp.size() - 1;
+    std::vector<Point> vpByY = vp;
     sortByX(vp, 0, vp.size()-1);
-    //TODO
+    sortByY(vpByY, 0, vp.size() - 1);
+    nearestPoints_DC_Rec(vp, vpByY, res, i, j);
     return res;
 }
 
+void nearestPoints_DC_Rec_MT(std::vector<Point> &vpByX, std::vector<Point>& vpByY,
+                             Result& bestResult, int i, int j, int threads){
+    // Base case
+    if (j - i <= 2){ // do not split small odd sized vectors
+        for (int a = i; a < j; ++a){
+            for (int b = i + 1; b <= j; ++b){
+                double distance = vpByX.at(a).distance(vpByX.at(b));
+                if (distance < bestResult.dmin){
+                    bestResult = Result(distance, vpByX.at(a), vpByX.at(b));
+                }
+            }
+        }
+        return;
+    }
+
+    // Left and right halves
+    int mid = (i + j) / 2;
+    if (threads > 2){
+        std::thread t1([&] () {
+            nearestPoints_DC_Rec_MT(vpByX, vpByY, bestResult, i, mid, threads / 2);
+        });
+        std::thread t2([&] () {
+            nearestPoints_DC_Rec_MT(vpByX, vpByY, bestResult, mid + 1, j, threads / 2);
+        });
+        t1.join();
+        t2.join();
+    }
+    else {
+        nearestPoints_DC_Rec_MT(vpByX, vpByY, bestResult, i, mid, 1);
+        nearestPoints_DC_Rec_MT(vpByX, vpByY, bestResult, mid + 1, j, 1);
+    }
+
+    // Center strip
+    // Cannot call recursive, since minDistance may be bigger than abs(y-midPoint.y)
+    // See property on problem statement on why sorting by Y is used here
+    for (int a = 0; a < vpByY.size(); ++a){
+        for (int b = a + 1; b < vpByY.size(); ++b){
+            if (std::abs(vpByY.at(a).y - vpByY.at(b).y) > bestResult.dmin){
+                break;
+            }
+            else{
+                double distance = vpByY.at(a).distance(vpByY.at(b));
+                if (distance < bestResult.dmin){
+                    bestResult = Result(distance, vpByY.at(a), vpByY.at(b));
+                }
+            }
+        }
+    }
+}
+
 Result nearestPoints_DC_MT(std::vector<Point> &vp) {
-    Result res;
+    Result res(MAX_DOUBLE, Point(0,0), Point(0,0));
+    int i = 0, j = vp.size() - 1;
+    std::vector<Point> vpByY = vp;
     sortByX(vp, 0, vp.size()-1);
-    //TODO
+    sortByY(vpByY, 0, vp.size() - 1);
+    nearestPoints_DC_Rec_MT(vp, vpByY, res, i, j, numThreads);
     return res;
 }
 
@@ -243,6 +345,8 @@ int testNPRandConstX(int size, std::string name, double dmin, NP_FUNC func, std:
 void testNearestPoints(NP_FUNC func, std::string alg) {
     std::cout << "algorithm; data set; time elapsed (ms); distance; point1; point2" << std::endl;
     int maxTime = 10000;
+    if ( testNPFile("Pontos4", 1.0, func, alg) > maxTime)
+        return;
     if ( testNPFile("Pontos8", 11841.3, func, alg) > maxTime)
         return;
     if ( testNPFile("Pontos64", 556.066, func, alg) > maxTime)
@@ -251,23 +355,12 @@ void testNearestPoints(NP_FUNC func, std::string alg) {
         return;
     if (testNPFile("Pontos16k", 13.0384, func, alg) > maxTime)
         return;
-    /*
-    // Uncomment to use more tests
     if (testNPFile("Pontos32k", 1.0, func, alg) > maxTime)
         return;
     if (testNPFile("Pontos64k", 1.0, func, alg) > maxTime)
         return;
     if (testNPFile("Pontos128k", 0.0, func, alg) > maxTime)
         return;
-    if (testNPRand(0x40000, "Pontos256k", 1.0, func, alg) > maxTime)
-        return;
-    if (testNPRand(0x80000, "Pontos512k",  1.0, func, alg) > maxTime)
-        return;
-    if ( testNPRand(0x100000, "Pontos1M",  1.0, func, alg) > maxTime)
-        return;
-    if ( testNPRand(0x200000, "Pontos2M",  1.0, func, alg) > maxTime)
-        return;
-    */
 }
 
 TEST(TP3_Ex1, testNP_BF) {
