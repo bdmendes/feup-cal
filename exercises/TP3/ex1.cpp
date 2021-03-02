@@ -77,8 +77,22 @@ Result nearestPoints_BF(std::vector<Point> &vp) {
 }
 
 Result nearestPoints_BF_SortByX(std::vector<Point> &vp) {
-    sortByX(vp, 0, vp.size()-1);
-    return nearestPoints_BF(vp);
+    sortByX(vp, 0, (int)vp.size()-1);
+    Result res;
+    double minDistance = 9999999;
+    for (int i = 0; i < vp.size(); ++i){
+        for (int j = i + 1; j < vp.size(); ++j){
+            double distance = vp.at(i).distance(vp.at(j));
+            if (distance < minDistance){
+                minDistance = distance;
+                res = Result(distance, vp.at(i), vp.at(j));
+            }
+            else if (std::abs(vp.at(i).x - vp.at(j).x) > minDistance){
+                break; // array is sorted, further iteration would be useless
+            }
+        }
+    }
+    return res;
 }
 
 void nearestPoints_DC_Rec(std::vector<Point> &vpByX, std::vector<Point>& vpByY, Result& bestResult, int i, int j){
