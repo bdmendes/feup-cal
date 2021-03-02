@@ -1,8 +1,89 @@
 #include "exercises.h"
 
+int maxIndex(const int A[], int n){
+    int curMax = -99999, curIdx = 0;
+    for (int i = 0; i < n; ++i){
+        if (A[i] > curMax){
+            curMax = A[i];
+            curIdx = i;
+        }
+    }
+    return curIdx;
+}
+
+int maxCrossingSubsequence(int A[], int i, int j, int& iRes, int& jRes){
+    int mid = (i+j)/2;
+
+    // Start at mid, and go left to find max
+    int leftSum = 0, maxLeftSum = 0;
+    for (int l = mid; l >= 0; --l){
+        leftSum += A[l];
+        if (leftSum > maxLeftSum){
+            maxLeftSum = leftSum;
+            iRes = l;
+        }
+    }
+
+    // Start after mid, and go right to find max
+    int rightSum = 0, maxRightSum = 0;
+    for (int l = mid + 1; l <= j; ++l){
+        rightSum += A[l];
+        if (rightSum > maxRightSum){
+            maxRightSum = rightSum;
+            jRes = l;
+        }
+    }
+
+    return maxLeftSum + maxRightSum;
+}
+
+int maxSubsequenceDCRec(int A[], int i, int j, int& bestI, int& bestJ, int& curMax){
+    if (i == j){
+        return A[i];
+    }
+
+    int mid = (i+j)/2;
+    int leftMax = maxSubsequenceDCRec(A, i, mid, bestI, bestJ, curMax);
+    int rightMax = maxSubsequenceDCRec(A, mid + 1, j, bestI, bestJ, curMax);
+    int crossingI = mid, crossingJ = mid;
+    int crossingMax = maxCrossingSubsequence(A, i, j, crossingI, crossingJ);
+
+    int options[] = {leftMax, rightMax, crossingMax};
+    int maxIdx = maxIndex(options, 3);
+    switch (maxIdx){
+        case 0:
+            if (leftMax > curMax){
+                curMax = leftMax;
+                bestI = i;
+                bestJ = mid;
+            }
+            break;
+        case 1:
+            if (rightMax > curMax){
+                curMax = rightMax;
+                bestI = mid + 1;
+                bestJ = j;
+            }
+            break;
+        case 2:
+            if (crossingMax > curMax){
+                curMax = crossingMax;
+                bestI = crossingI;
+                bestJ = crossingJ;
+            }
+            break;
+        default:
+            break;
+    }
+    return options[maxIdx];
+}
+
 int maxSubsequenceDC(int A[], unsigned int n, int &i, int &j) {
-    //TODO
-	return 0;
+    int bestI, bestJ, curMax = -99999;
+    int max = maxSubsequenceDCRec(A, 0, (int)n-1, bestI, bestJ, curMax);
+    i = bestI;
+    j = bestJ;
+    return max;
 }
 
 /// TESTS ///
