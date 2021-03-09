@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <pthread.h>
 
 const double MAX_DOUBLE = std::numeric_limits<double>::max();
 
@@ -369,12 +368,15 @@ void testNearestPoints(NP_FUNC func, std::string alg) {
         return;
     if (testNPFile("Pontos16k", 13.0384, func, alg) > maxTime)
         return;
+    /* Uncomment to test in more intensive cases */
+/*
     if (testNPFile("Pontos32k", 1.0, func, alg) > maxTime)
         return;
     if (testNPFile("Pontos64k", 1.0, func, alg) > maxTime)
         return;
     if (testNPFile("Pontos128k", 0.0, func, alg) > maxTime)
         return;
+*/
 }
 
 TEST(TP3_Ex1, testNP_BF) {
