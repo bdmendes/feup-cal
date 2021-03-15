@@ -3,6 +3,7 @@
 std::string calcSum(int sequence[], unsigned long n) {
     // Initialize dp matrix: minimal starting at i with len k
     unsigned long dp[100][100];
+    return {};
 }
 
 void testPerformanceCalcSum() {

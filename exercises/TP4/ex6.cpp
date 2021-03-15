@@ -3,7 +3,24 @@
 #include "../TP3/exercises.h"
 
 int maxSubsequenceDP(int A[], unsigned int n, unsigned int &i, unsigned int &j) {
-    return 0;
+    int table[n]; // max value ending at index
+    int bestMax = A[0], curI = 0;
+    table[0] = A[0];
+
+    for (int idx = 1; idx < (int)n; idx++){
+        if (A[idx] + table[idx-1] > A[idx]) {
+            table[idx] = A[idx] + table[idx - 1];
+        } else {
+            curI = idx;
+            table[idx] = A[idx];
+        }
+        if (table[idx] > bestMax){
+            i = curI;
+            j = idx;
+            bestMax = table[idx];
+        }
+    }
+    return bestMax;
 }
 
 void testPerformanceMaxSubsequence() {

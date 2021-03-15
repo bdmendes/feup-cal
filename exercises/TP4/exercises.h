@@ -4,6 +4,7 @@
 #define CAL_TP4_CLASSES_EXERCISES_H
 
 #include <string>
+#include <unordered_map>
 
 // Ex 1
 // Recursive version
