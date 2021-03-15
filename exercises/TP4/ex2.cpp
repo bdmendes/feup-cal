@@ -1,8 +1,34 @@
 #include "exercises.h"
+#include <vector>
 
-bool changeMakingUnlimitedDP(unsigned int C[], unsigned int n, unsigned int T, unsigned int usedCoins[]) {
-    // TODO
-	return false;
+bool changeMakingUnlimitedDP(const unsigned int C[], unsigned int n, unsigned int T, unsigned int usedCoins[]) {
+    if (T == 0) return true;
+    std::vector<std::vector<unsigned>> table(T+1,std::vector<unsigned>());
+    for (int i = 0; i <= T; i++){
+        if (!table.at(i).empty() || i == 0){
+            for (int j = 0; j < n; j++){ // choose any of the coins
+                unsigned coin = C[j];
+                unsigned sum = i + coin;
+                if (sum > T) continue;
+                auto remainingVec = table.at(i);
+                remainingVec.push_back(coin); // new pocket is previous plus chosen coin
+                if (table.at(sum).empty() || table.at(sum).size() > remainingVec.size()){
+                    table.at(sum) = remainingVec;
+                }
+            }
+        }
+    }
+    if (!table.at(T).empty()){
+        // build the solution
+        for (int i = 0; i < n; i++) usedCoins[i] = 0;
+        for (unsigned coin: table.at(T)){
+            for (int i = 0; i < n; ++i){
+                if (C[i] == coin) usedCoins[i]++;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 

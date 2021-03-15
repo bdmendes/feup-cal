@@ -1,20 +1,9 @@
 #include "exercises.h"
+#include "../TP1/exercises.h"
+#include "../TP3/exercises.h"
 
 int maxSubsequenceDP(int A[], unsigned int n, unsigned int &i, unsigned int &j) {
-    // TODO
     return 0;
-}
-
-int maxSubsequenceBF(int A[], unsigned int n, unsigned int &i, unsigned int &j) {
-    // TODO
-	// Copy-paste your solution for ex2 of TP1 HERE
-	return 0;
-}
-
-int maxSubsequenceDC(int A[], unsigned int n, unsigned int &i, unsigned int &j) {
-    // TODO
-	// Copy-paste your solution for ex2 of TP3 HERE
-	return 0;
 }
 
 void testPerformanceMaxSubsequence() {

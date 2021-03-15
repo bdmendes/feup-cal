@@ -12,10 +12,10 @@ unsigned long factorialRecurs(unsigned long n);
 unsigned long factorialDP(unsigned long n);
 
 // Ex 2
-bool changeMakingUnlimitedDP(unsigned int C[], unsigned int n, unsigned int T, unsigned int usedCoins[]);
+bool changeMakingUnlimitedDP(const unsigned int C[], unsigned int n, unsigned int T, unsigned int usedCoins[]);
 
 // Ex 3
-bool changeMakingDP(unsigned int C[], unsigned int Stock[], unsigned int n, unsigned int T, unsigned int usedCoins[]);
+bool changeMakingDP(const unsigned int C[], const unsigned int Stock[], unsigned int n, unsigned int T, unsigned int usedCoins[]);
 
 // Ex 4
 std::string calcSum(int sequence[], unsigned long n);

@@ -8,8 +8,9 @@ unsigned long factorialRecurs(unsigned long n) {
 unsigned long factorialDP(unsigned long n) {
     unsigned long memo[n+1];
     memo[0] = memo[1] = 1;
-    for (int i = 2; i <= n; ++i){
-        memo[i] = i * memo[i-1];
+    for (int i = 2; i <= n; i++) memo[i] = i;
+    for (int i = 1; i < n; ++i){
+        memo[i+1] *= memo[i];
     }
     return memo[n];
 }

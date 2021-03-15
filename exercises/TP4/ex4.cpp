@@ -1,8 +1,8 @@
 #include "exercises.h"
 
 std::string calcSum(int sequence[], unsigned long n) {
-    // TODO
-    return "";
+    // Initialize dp matrix: minimal starting at i with len k
+    unsigned long dp[100][100];
 }
 
 void testPerformanceCalcSum() {
