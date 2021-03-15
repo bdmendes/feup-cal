@@ -19,7 +19,7 @@ bool changeMakingUnlimitedDP(const unsigned int C[], unsigned int n, unsigned in
 bool changeMakingDP(const unsigned int C[], const unsigned int Stock[], unsigned int n, unsigned int T, unsigned int usedCoins[]);
 
 // Ex 4
-std::string calcSum(int sequence[], unsigned long n);
+std::string calcSum(const int sequence[], unsigned long n);
 void testPerformanceCalcSum();
 
 // Ex 5
