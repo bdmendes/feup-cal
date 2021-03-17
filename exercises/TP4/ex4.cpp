@@ -31,10 +31,6 @@ std::string calcSum(const int sequence[], unsigned long n) {
     return res.str();
 }
 
-void testPerformanceCalcSum() {
-    //TODO
-}
-
 /// TESTS ///
 #include <gtest/gtest.h>
 
@@ -44,6 +40,4 @@ TEST(TP4_Ex4, CalcSumArrayTest) {
 
     EXPECT_EQ("1,4;9,1;11,2;18,1;22,0;",calcSum(sequence, 5));
     EXPECT_EQ("1,1;5,3;11,3;16,1;20,3;24,3;31,1;35,1;41,0;",calcSum(sequence2, 9));
-	
-	testPerformanceCalcSum();
 }

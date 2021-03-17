@@ -92,8 +92,11 @@ Vertex<T> * Graph<T>::findVertex(const T &in) const {
  */
 template <class T>
 bool Graph<T>::addVertex(const T &in) {
-    // TODO (4 lines)
-    // HINT: use the findVertex function to check if a vertex already exists
+    auto* V = new Vertex<T>(in);
+    if (this->findVertex(in) == NULL){
+        this->vertexSet.push_back(V);
+        return true;
+    }
     return false;
 }
 
@@ -106,10 +109,13 @@ bool Graph<T>::addVertex(const T &in) {
  */
 template <class T>
 bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
-    // TODO (6 lines)
-    // HINT: use findVertex to obtain the actual vertices
-    // HINT: use the next function to actually add the edge
-    return false;
+    Vertex<T>* srcV = findVertex(sourc);
+    if (srcV == NULL) return false;
+    Vertex<T>* destV = findVertex(dest);
+    if (destV == NULL) return false;
+
+    srcV->addEdge(destV, w);
+    return true;
 }
 
 /*
@@ -118,7 +124,8 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
  */
 template <class T>
 void Vertex<T>::addEdge(Vertex<T> *d, double w) {
-    // TODO (1 line)
+    Edge<T> e(d,w);
+    this->adj.push_back(e);
 }
 
 
@@ -131,10 +138,11 @@ void Vertex<T>::addEdge(Vertex<T> *d, double w) {
  */
 template <class T>
 bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
-    // TODO (5 lines)
-    // HINT: Use "findVertex" to obtain the actual vertices.
-    // HINT: Use the next function to actually remove the edge.
-    return false;
+    Vertex<T>* srcV = findVertex(sourc);
+    if (srcV == NULL) return false;
+    Vertex<T>* destV = findVertex(dest);
+    if (destV == NULL) return false;
+    return srcV->removeEdgeTo(destV);
 }
 
 /*
@@ -144,8 +152,12 @@ bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
  */
 template <class T>
 bool Vertex<T>::removeEdgeTo(Vertex<T> *d) {
-    // TODO (6 lines)
-    // HINT: use an iterator to scan the "adj" vector and then erase the edge.
+    for (auto it = adj.begin(); it != adj.end(); it++){
+        if (it->dest == d){
+            adj.erase(it);
+            return true;
+        }
+    }
     return false;
 }
 
@@ -159,9 +171,16 @@ bool Vertex<T>::removeEdgeTo(Vertex<T> *d) {
  */
 template <class T>
 bool Graph<T>::removeVertex(const T &in) {
-    // TODO (10 lines)
-    // HINT: use an iterator to scan the "vertexSet" vector and then erase the vertex.
-    // HINT: take advantage of "removeEdgeTo" to remove incoming edges.
+    for (auto it = vertexSet.begin(); it != vertexSet.end(); it++){
+        if ((*it)->info == in){
+            for (auto& v: vertexSet){
+                v->removeEdgeTo(*it);
+            }
+            vertexSet.erase(it);
+            delete *it;
+            return true;
+        }
+    }
     return false;
 }
 
@@ -175,8 +194,14 @@ bool Graph<T>::removeVertex(const T &in) {
  */
 template <class T>
 std::vector<T> Graph<T>::dfs() const {
-    // TODO (7 lines)
+    // Make all vertices unvisited
+    for (auto& v: vertexSet) v->visited = false;
+
     std::vector<T> res;
+    // Search in depth starting at each node
+    for (const auto& v: vertexSet){
+        if (!v->visited) dfsVisit(v,res);
+    }
     return res;
 }
 
@@ -186,7 +211,13 @@ std::vector<T> Graph<T>::dfs() const {
  */
 template <class T>
 void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> & res) const {
-    // TODO (7 lines)
+    v->visited = true;
+    res.push_back(v->info);
+    for (auto& e: v->adj){
+        if (!e.dest->visited){
+            dfsVisit(e.dest, res);
+        }
+    }
 }
 
 /****************** 2b) bfs ********************/
