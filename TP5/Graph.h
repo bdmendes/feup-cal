@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 template <class T> class Edge;
 template <class T> class Graph;
@@ -177,7 +178,6 @@ bool Graph<T>::removeVertex(const T &in) {
                 v->removeEdgeTo(*it);
             }
             vertexSet.erase(it);
-            delete *it;
             return true;
         }
     }
@@ -194,11 +194,9 @@ bool Graph<T>::removeVertex(const T &in) {
  */
 template <class T>
 std::vector<T> Graph<T>::dfs() const {
-    // Make all vertices unvisited
     for (auto& v: vertexSet) v->visited = false;
 
     std::vector<T> res;
-    // Search in depth starting at each node
     for (const auto& v: vertexSet){
         if (!v->visited) dfsVisit(v,res);
     }
@@ -266,7 +264,7 @@ std::vector<T> Graph<T>::bfs(const T & source) const {
 
 template<class T>
 std::vector<T> Graph<T>::topsort() const {
-    if (vertexSet.empty()) return {};
+    if (vertexSet.empty() || !isDAG()) return {};
 
     std::vector<T> res;
     std::queue<Vertex<T>*> queue;
@@ -317,8 +315,37 @@ std::vector<T> Graph<T>::topsort() const {
 
 template <class T>
 int Graph<T>::maxNewChildren(const T & source, T &inf) const {
-    // TODO (28 lines, mostly reused)
-    return 0;
+    if (vertexSet.empty()) return 0;
+
+    for (auto& v: vertexSet) v->visited = false;
+    std::queue<Vertex<T>*> queue;
+    queue.push(vertexSet.at(0));
+    vertexSet.at(0)->visited = true;
+
+    int currMaxUnivistedChildren = 0;
+    T currMaxVertexInfo = vertexSet.at(0)->info;
+    while (!queue.empty()){
+        auto currV = queue.front();
+        queue.pop();
+        int unvisitedChildren = 0;
+
+        for (auto& adjEdge: currV->adj){
+            auto adjV = adjEdge.dest;
+            if (!adjV->visited){
+                unvisitedChildren++;
+                queue.push(adjV);
+                adjV->visited = true;
+            }
+        }
+
+        if (unvisitedChildren > currMaxUnivistedChildren){
+            currMaxUnivistedChildren = unvisitedChildren;
+            currMaxVertexInfo = currV->info;
+        }
+    }
+
+    inf = currMaxVertexInfo;
+    return currMaxUnivistedChildren;
 }
 
 /****************** 3b) isDAG   (HOME WORK)  ********************/
@@ -333,9 +360,10 @@ int Graph<T>::maxNewChildren(const T & source, T &inf) const {
 
 template <class T>
 bool Graph<T>::isDAG() const {
-    // TODO (9 lines, mostly reused)
-    // HINT: use the auxiliary field "processing" to mark the vertices in the stack.
-    return true;
+    for (auto& v: vertexSet) v->processing = false;
+    return std::all_of(vertexSet.begin(), vertexSet.end(), [&](Vertex<T>* v){
+        return dfsIsDAG(v);
+    });
 }
 
 /**
@@ -344,7 +372,13 @@ bool Graph<T>::isDAG() const {
  */
 template <class T>
 bool Graph<T>::dfsIsDAG(Vertex<T> *v) const {
-    // TODO (12 lines, mostly reused)
+    v->processing = true;
+    for (auto& e: v->adj){
+        auto currV = e.dest;
+        if (currV->processing) return false;
+        if (!dfsIsDAG(currV)) return false;
+    }
+    v->processing = false;
     return true;
 }
 
