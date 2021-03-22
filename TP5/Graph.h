@@ -234,8 +234,10 @@ std::vector<T> Graph<T>::bfs(const T & source) const {
     for (auto& v: vertexSet) v->visited = false;
     std::queue<Vertex<T>*> queue;
 
-    queue.push(vertexSet.at(0));
-    vertexSet.at(0)->visited = true;
+    auto startingVertex = findVertex(source);
+    if (startingVertex == NULL) return {};
+    queue.push(startingVertex);
+    startingVertex->visited = true;
 
     while (!queue.empty()){
         auto currV = queue.front();
