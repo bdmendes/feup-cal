@@ -230,10 +230,28 @@ void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> & res) const {
  */
 template <class T>
 std::vector<T> Graph<T>::bfs(const T & source) const {
-    // TODO (22 lines)
-    // HINT: Use the flag "visited" to mark newly discovered vertices .
-    // HINT: Use the "queue<>" class to temporarily store the vertices.
+    if (vertexSet.empty()) return {};
+
     std::vector<T> res;
+    for (auto& v: vertexSet) v->visited = false;
+    std::queue<Vertex<T>*> queue;
+
+    queue.push(vertexSet.at(0));
+    vertexSet.at(0)->visited = true;
+
+    while (!queue.empty()){
+        auto currV = queue.front();
+        queue.pop();
+        res.push_back(currV->info);
+        for (auto& adjEdge: currV->adj){
+            auto adjV = adjEdge.dest;
+            if (!adjV->visited){
+                queue.push(adjV);
+                adjV->visited = true;
+            }
+        }
+    }
+
     return res;
 }
 
@@ -248,8 +266,42 @@ std::vector<T> Graph<T>::bfs(const T & source) const {
 
 template<class T>
 std::vector<T> Graph<T>::topsort() const {
-    // TODO (26 lines)
+    if (vertexSet.empty()) return {};
+
     std::vector<T> res;
+    std::queue<Vertex<T>*> queue;
+
+    /* Initialize vertices arrivals to 0 */
+    for (auto& vertex: vertexSet){
+        vertex->indegree = 0;
+    }
+
+    /* Calculate unprocessed vertex arriving edges */
+    for (auto& vertex: vertexSet){
+        for (auto& adjEdge: vertex->adj){
+            auto adjVertex = adjEdge.dest;
+            adjVertex->indegree++;
+        }
+    }
+
+    /* Queue unreachable vertices to process */
+    for (auto& vertex: vertexSet){
+        if (vertex->indegree == 0) queue.push(vertex);
+    }
+
+    while (!queue.empty()){
+        auto currV = queue.front();
+        queue.pop();
+        res.push_back(currV->info);
+        for (auto& adjEdge: currV->adj){
+            auto adjV = adjEdge.dest;
+            adjV->indegree--;
+            if (adjV->indegree == 0){
+                queue.push(adjV);
+            }
+        }
+    }
+
     return res;
 }
 
