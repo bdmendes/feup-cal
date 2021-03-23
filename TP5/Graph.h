@@ -320,9 +320,10 @@ int Graph<T>::maxNewChildren(const T & source, T &inf) const {
     if (vertexSet.empty()) return 0;
 
     for (auto& v: vertexSet) v->visited = false;
+
     std::queue<Vertex<T>*> queue;
     auto startingVertex = findVertex(source);
-    if (startingVertex == NULL) return {};
+    if (startingVertex == NULL) return 0;
     queue.push(startingVertex);
     startingVertex->visited = true;
 
