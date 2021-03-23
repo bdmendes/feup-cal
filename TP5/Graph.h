@@ -284,7 +284,7 @@ std::vector<T> Graph<T>::topsort() const {
         }
     }
 
-    /* Queue unreachable vertices to process */
+    /* Queue vertices with no arrivals to process */
     for (auto& vertex: vertexSet){
         if (vertex->indegree == 0) queue.push(vertex);
     }
@@ -321,8 +321,10 @@ int Graph<T>::maxNewChildren(const T & source, T &inf) const {
 
     for (auto& v: vertexSet) v->visited = false;
     std::queue<Vertex<T>*> queue;
-    queue.push(vertexSet.at(0));
-    vertexSet.at(0)->visited = true;
+    auto startingVertex = findVertex(source);
+    if (startingVertex == NULL) return {};
+    queue.push(startingVertex);
+    startingVertex->visited = true;
 
     int currMaxUnivistedChildren = 0;
     T currMaxVertexInfo = vertexSet.at(0)->info;
