@@ -327,7 +327,7 @@ int Graph<T>::maxNewChildren(const T & source, T &inf) const {
     queue.push(startingVertex);
     startingVertex->visited = true;
 
-    int currMaxUnivistedChildren = 0;
+    int currMaxUnvisitedChildren = 0;
     T currMaxVertexInfo = vertexSet.at(0)->info;
     while (!queue.empty()){
         auto currV = queue.front();
@@ -343,14 +343,14 @@ int Graph<T>::maxNewChildren(const T & source, T &inf) const {
             }
         }
 
-        if (unvisitedChildren > currMaxUnivistedChildren){
-            currMaxUnivistedChildren = unvisitedChildren;
+        if (unvisitedChildren > currMaxUnvisitedChildren){
+            currMaxUnvisitedChildren = unvisitedChildren;
             currMaxVertexInfo = currV->info;
         }
     }
 
     inf = currMaxVertexInfo;
-    return currMaxUnivistedChildren;
+    return currMaxUnvisitedChildren;
 }
 
 /****************** 3b) isDAG   (HOME WORK)  ********************/
