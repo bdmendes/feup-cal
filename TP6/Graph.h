@@ -10,6 +10,7 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <stdexcept>
 #include "MutablePriorityQueue.h"
 
 
@@ -235,7 +236,39 @@ void Graph<T>::dijkstraShortestPath(const T &origin) {
 
 template<class T>
 void Graph<T>::bellmanFordShortestPath(const T &orig) {
-    // TODO implement this
+    for (auto& v: vertexSet){
+        v->dist = INF;
+        v->path = nullptr;
+    }
+
+    auto startV = findVertex(orig);
+    if (startV == NULL) return;
+    startV->dist = 0;
+
+    for (int i = 1; i <= vertexSet.size() - 1; i++){ // longest path is v-1 edges long
+        bool changed = false;
+        for (auto& v : vertexSet){
+            for (auto& e : v->adj){
+                auto destV = e.dest;
+                if (destV->dist > v->dist + e.weight){
+                    changed = true;
+                    destV->dist = v->dist + e.weight;
+                    destV->path = v;
+                }
+            }
+        }
+        if (!changed) break;
+    }
+
+    /* Fail if negative cycles are found */
+    for (auto& v : vertexSet){
+        for (auto& e : v->adj){
+            auto destV = e.dest;
+            if (v->dist + e.weight < destV->dist){
+                throw std::logic_error("There are cycles of negative weight");
+            }
+        }
+    }
 }
 
 
