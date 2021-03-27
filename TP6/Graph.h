@@ -9,6 +9,7 @@
 #include <list>
 #include <limits>
 #include <cmath>
+#include <algorithm>
 #include "MutablePriorityQueue.h"
 
 
@@ -172,7 +173,29 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
 
 template<class T>
 void Graph<T>::unweightedShortestPath(const T &orig) {
-    // TODO implement this
+    for (auto& v: vertexSet){
+        v->dist = INF;
+        v->path = nullptr;
+    }
+
+    auto startV = findVertex(orig);
+    if (startV == NULL) return;
+
+    startV->dist = 0;
+    std::queue<Vertex<T>*> q;
+    q.push(startV);
+    while (!q.empty()){
+        auto currV = q.front();
+        q.pop();
+        for (auto& e: currV->adj){
+            auto destV = e.dest;
+            if (destV->dist == INF){
+                q.push(destV);
+                destV->dist = currV->dist + 1;
+                destV->path = currV;
+            }
+        }
+    }
 }
 
 
@@ -191,7 +214,15 @@ void Graph<T>::bellmanFordShortestPath(const T &orig) {
 template<class T>
 std::vector<T> Graph<T>::getPath(const T &origin, const T &dest) const{
     std::vector<T> res;
-    // TODO implement this
+
+    /* Start at the end and traverse back. path(v) is always the best */
+    auto currV = findVertex(dest);
+    if (currV == nullptr) return {};
+    while (currV != nullptr){
+        res.push_back(currV->info);
+        currV = currV->path;
+    }
+    std::reverse(res.begin(), res.end());
     return res;
 }
 
