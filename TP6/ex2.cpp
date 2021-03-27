@@ -24,9 +24,8 @@ TEST(TP6_Ex2, test_dijkstra) {
 
 
 TEST(TP6_Ex2, test_performance_dijkstra) {
-    //TODO: Change these const parameters as needed
     const int MIN_SIZE = 10;
-    const int MAX_SIZE = 30; //Try with 100
+    const int MAX_SIZE = 30;
     const int STEP_SIZE = 10;
     for (int n = MIN_SIZE; n <= MAX_SIZE; n += STEP_SIZE) {
        Graph< std::pair<int,int> > g;

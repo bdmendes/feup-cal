@@ -51,6 +51,7 @@ template <class T>
 T* MutablePriorityQueue<T>::extractMin() {
     auto x = H[1];
     H[1] = H.back();
+    H.pop_back();
     if(H.size() > 1) heapifyDown(1);
     heapifyDown(1);
     x->queueIndex = 0;

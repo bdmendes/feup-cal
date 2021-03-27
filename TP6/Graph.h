@@ -61,7 +61,7 @@ void Vertex<T>::addEdge(Vertex<T> *d, double w) {
 
 template <class T>
 bool Vertex<T>::operator<(Vertex<T> & vertex) const {
-    return this->dist < vertex.dist;
+    return this->dist < vertex.dist; // necessary for priority queue
 }
 
 template <class T>
@@ -201,7 +201,35 @@ void Graph<T>::unweightedShortestPath(const T &orig) {
 
 template<class T>
 void Graph<T>::dijkstraShortestPath(const T &origin) {
-    // TODO implement this
+    for (auto& v: vertexSet){
+        v->dist = INF;
+        v->path = nullptr;
+    }
+
+    auto startV = findVertex(origin);
+    if (startV == NULL) return;
+
+    /* Use mutable heap so that a queue change is O(log n) instead of O(n) */
+    MutablePriorityQueue<Vertex<T>> q;
+    startV->dist = 0;
+    q.insert(startV); // key = dist(V) = 0
+
+    while (!q.empty()){
+        auto currV = q.extractMin(); // greedy; would not work with negative edges!
+        for (auto& e: currV->adj){
+            auto destV = e.dest;
+            if (destV->dist > currV->dist + e.weight){
+                bool alreadyQueued = destV->dist != INF;
+                destV->dist = currV->dist + e.weight;
+                destV->path = currV;
+                if (alreadyQueued){
+                    q.decreaseKey(destV);
+                } else {
+                    q.insert(destV);
+                }
+            }
+        }
+    }
 }
 
 
