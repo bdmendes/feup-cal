@@ -11,6 +11,7 @@
 #include <cmath>
 #include <algorithm>
 #include <stdexcept>
+#include <unordered_map>
 #include "MutablePriorityQueue.h"
 
 
@@ -291,15 +292,81 @@ std::vector<T> Graph<T>::getPath(const T &origin, const T &dest) const{
 
 /**************** All Pairs Shortest Path  ***************/
 
+struct pairHash {
+    template <class T1, class T2>
+    std::size_t operator () (const std::pair<T1,T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
+    }
+};
+
+template <class T>
+static std::unordered_map<std::pair<int,int>,std::vector<Vertex<T>*>, pairHash> floydPath;
+
 template<class T>
 void Graph<T>::floydWarshallShortestPath() {
-    // TODO implement this
+    int dist[50][50];
+    if (vertexSet.size() >= 49) throw std::logic_error("No sufficient space in dp table");
+
+    /* Set length 1 paths */
+    for (int i = 0; i < 50; i++){
+        for (int j = 0; j < 50; j++){
+            dist[i][j] = 10e5;
+        }
+    }
+    for (int i = 1; i <= vertexSet.size(); i++){
+        for (int j = 1; j <= vertexSet.size(); j++){
+            for (auto& e: vertexSet.at(i-1)->adj){
+                if (e.dest->info == vertexSet.at(j-1)->info){
+                    floydPath<T>[std::make_pair(i, j)] = {};
+                    dist[i][j] = e.weight;
+                    break;
+                }
+            }
+        }
+    }
+
+    /* Add middle men to paths */
+    for (int k = 1; k <= vertexSet.size(); k++){
+        auto middleMan = vertexSet.at(k - 1);
+        for (int i = 1; i <= vertexSet.size(); i++){
+            for (int j = 1; j <= vertexSet.size(); j++){
+                if (dist[i][k] + dist[k][j] < dist[i][j]){
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                    auto& fullPath = floydPath<T>[std::make_pair(i, j)];
+                    auto pathBeforeMiddleMan = floydPath<T>[std::make_pair(i, k)];
+                    auto pathAfterMiddleMan = floydPath<T>[std::make_pair(k,j)];
+                    fullPath = pathBeforeMiddleMan;
+                    fullPath.push_back(middleMan);
+                    fullPath.insert(fullPath.end(), pathAfterMiddleMan.begin(),
+                                    pathAfterMiddleMan.end());
+                }
+            }
+        }
+    }
 }
 
 template<class T>
 std::vector<T> Graph<T>::getfloydWarshallPath(const T &orig, const T &dest) const{
     std::vector<T> res;
-    // TODO implement this
+
+    /* Find integer correspondence */
+    int i = 0, j = 0;
+    for (int a = 1; a <= vertexSet.size(); a++){
+        if (vertexSet.at(a-1)->info == orig){
+            i = a;
+        } else if (vertexSet.at(a-1)->info == dest){
+            j = a;
+        }
+    }
+    if (i == 0 || j == 0) return {};
+
+    res.push_back(orig);
+    for (auto& v: floydPath<T>[std::make_pair(i, j)]){
+        res.push_back(v->info);
+    }
+    res.push_back(dest);
     return res;
 }
 
