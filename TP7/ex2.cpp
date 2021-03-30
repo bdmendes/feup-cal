@@ -7,17 +7,20 @@
 
 TEST(TP7_Ex2, test_kruskal) {
     Graph<int> graph = CreateTestGraph();
-    unsigned int totalCost = graph.calculateKruskal();
-    EXPECT_EQ(11, totalCost);
+    std::vector<Vertex<int>* > res = graph.calculateKruskal();
 
     std::stringstream ss;
-    for(const auto v : graph.getVertexSet()) {
+    for(const auto v : res) {
         ss << v->getInfo() << "<-";
         if ( v->getPath() != nullptr )
-            ss << v->getPath()->getInfo();
+        ss << v->getPath()->getInfo();
         ss << "|";
     }
+
     std::cout << ss.str() << std::endl;
+
+    EXPECT_TRUE(isSpanningTree(res));
+    EXPECT_EQ(spanningTreeCost(res), 11);
 }
 
 TEST(TP7_Ex2, test_performance_kruskal) {

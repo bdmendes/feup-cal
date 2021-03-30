@@ -17,4 +17,7 @@ Graph<int> CreateTestGraph();
 
 void generateRandomGridGraph(int n, Graph<std::pair<int,int>> & g);
 
+bool isSpanningTree(const std::vector<Vertex<int>*> &res);
+double spanningTreeCost(const std::vector<Vertex<int>*> &res);
+
 #endif //TEST_AUX_H_

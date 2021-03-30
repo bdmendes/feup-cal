@@ -21,6 +21,7 @@ template <class T> class Vertex;
 
 template <class T>
 class Vertex {
+    friend double spanningTreeCost(const std::vector<Vertex<int>*> &);
 	T info;                 // contents
 	std::vector<Edge<T> *> adj;  // outgoing edges
 
@@ -36,7 +37,7 @@ class Vertex {
 	Edge<T> * addEdge(Vertex<T> *dest, double w);
 public:
 	Vertex(T in);
-	bool operator<(Vertex<T> & vertex) const; // // required by MutablePriorityQueue
+	bool operator<(const Vertex<T> & vertex) const; // // required by MutablePriorityQueue
 	T getInfo() const;
 	double getDist() const;
 	Vertex *getPath() const;
@@ -60,7 +61,7 @@ Edge<T> *Vertex<T>::addEdge(Vertex<T> *d, double w) {
 }
 
 template <class T>
-bool Vertex<T>::operator<(Vertex<T> & vertex) const {
+bool Vertex<T>::operator<(const Vertex<T> & vertex) const {
 	return this->dist < vertex.dist;
 }
 
@@ -130,17 +131,17 @@ class Graph {
 
 
 public:
-    ~Graph();
 	Vertex<T> *findVertex(const T &in) const;
 	bool addVertex(const T &in);
 	bool addEdge(const T &sourc, const T &dest, double w);
 	bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
 	int getNumVertex() const;
     std::vector<Vertex<T> *> getVertexSet() const;
+	~Graph();
 
 	// Fp07 - minimum spanning tree
-    unsigned int calculatePrim();
-    unsigned int calculateKruskal();
+	std::vector<Vertex<T>*> calculatePrim();
+	std::vector<Vertex<T>*> calculateKruskal();
 };
 
 
@@ -194,24 +195,63 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
 
 template <class T>
 bool Graph<T>::addBidirectionalEdge(const T &sourc, const T &dest, double w) {
-	//TODO
-	return false;
+    auto v1 = findVertex(sourc);
+    auto v2 = findVertex(dest);
+    if (v1 == nullptr || v2 == nullptr)
+        return false;
+    auto e1 = v1->addEdge(v2, w);
+    auto e2 = v2->addEdge(v1, w);
+    e1->reverse = e2;
+    e2->reverse = e1;
+    return true;
 }
 
 template <class T>
 Graph<T>::~Graph() {
-
-
+    /*
+	for (auto v : vertexSet) {
+		for (auto e : v->adj)
+			delete e;
+		delete v;
+	}
+    */
 }
 
 /**************** Minimum Spanning Tree  ***************/
 
-#include <iostream>
-
 template <class T>
-unsigned int Graph<T>::calculatePrim() {
-    //TODO
-	return 0;
+std::vector<Vertex<T>* > Graph<T>::calculatePrim() {
+    for (auto& v: vertexSet){
+        v->dist = INF;
+        v->path = nullptr;
+        v->visited = false;
+    }
+
+    MutablePriorityQueue<Vertex<T>> q;
+    q.insert(vertexSet.at(0));
+    vertexSet.at(0)->dist = 0;
+
+    while (!q.empty()){
+        auto currV = q.extractMin();
+        currV->visited = true;
+        for (auto& e : currV->adj){
+            auto destV = e->dest;
+            if (!destV->visited){
+                auto currDist = destV->dist;
+                if (destV->dist > e->weight){
+                    destV->dist = e->weight;
+                    destV->path = currV;
+                    if (currDist == INF){
+                        q.insert(destV);
+                    } else {
+                        q.decreaseKey(destV);
+                    }
+                }
+            }
+        }
+    }
+
+    return vertexSet;
 }
 
 /**
@@ -250,9 +290,9 @@ Vertex<T> * Graph<T>::findSet(Vertex<T> * x) {
  * to the parent vertex in the tree (nullptr in the root).
  */
 template <class T>
-unsigned int Graph<T>::calculateKruskal() {
-    //TODO
-	return 0;
+std::vector<Vertex<T>*> Graph<T>::calculateKruskal() {
+    // TODO
+    return vertexSet;
 }
 
 /**

@@ -7,17 +7,20 @@
 
 TEST(TP7_Ex1, test_prim) {
     Graph<int> graph = CreateTestGraph();
-    unsigned int totalCost = graph.calculatePrim();
-    EXPECT_EQ(11, totalCost);
+    std::vector<Vertex<int>* > res = graph.calculatePrim();
 
     std::stringstream ss;
-    for(const auto v : graph.getVertexSet()) {
+    for(const auto v : res) {
         ss << v->getInfo() << "<-";
         if ( v->getPath() != nullptr )
-            ss << v->getPath()->getInfo();
+        ss << v->getPath()->getInfo();
         ss << "|";
     }
+
     std::cout << ss.str() << std::endl;
+
+    EXPECT_TRUE(isSpanningTree(res));
+    EXPECT_EQ(spanningTreeCost(res), 11);
 }
 
 TEST(TP7_Ex1, test_performance_prim) {

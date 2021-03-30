@@ -45,3 +45,46 @@ void generateRandomGridGraph(int n, Graph<std::pair<int,int>> & g) {
                 g.addBidirectionalEdge(std::make_pair(i,j), std::make_pair(i,j+1), dis(gen));
         }
 }
+
+bool isSpanningTree(const std::vector<Vertex<int>*> &res){
+    std::map<int, std::set<int> > adj;
+    for(const Vertex<int> *v: res) {
+        adj[v->getInfo()];
+        const Vertex<int> *u = v->getPath();
+        if (u != nullptr) {
+            adj[u->getInfo()].emplace(v->getInfo());
+            adj[v->getInfo()].emplace(u->getInfo());
+        }
+    }
+
+    std::queue<int> q;
+    std::set<int> visited;
+    q.push(res.at(0)->getInfo());
+    while(!q.empty()){
+        int u = q.front(); q.pop();
+        if(visited.count(u)) continue;
+        visited.emplace(u);
+        for(const int &v: adj.at(u)){
+            q.emplace(v);
+        }
+    }
+
+    for(const Vertex<int> *v: res)
+        if(!visited.count(v->getInfo())) return false;
+    return true;
+}
+
+double spanningTreeCost(const std::vector<Vertex<int>*> &res){
+    double ret = 0;
+    for(const Vertex<int> *v: res){
+        const Vertex<int> *u = v->getPath();
+        if(u == nullptr) continue;
+        for(const Edge<int> *e: u->adj){
+            if(e->getDest()->getInfo() == v->getInfo()){
+                ret += e->getWeight();
+                break;
+            }
+        }
+    }
+    return ret;
+}
