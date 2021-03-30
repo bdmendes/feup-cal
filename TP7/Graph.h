@@ -295,6 +295,7 @@ std::vector<Vertex<T>*> Graph<T>::calculateKruskal() {
     /* Make all vertices the parent of a distinct set */
     for (auto& v: vertexSet){
         makeSet(v);
+        v->visited = false;
     }
 
     /* List sorted edges */
@@ -309,16 +310,19 @@ std::vector<Vertex<T>*> Graph<T>::calculateKruskal() {
         return e1->weight < e2->weight;
     });
 
-    /* Add edges if no cycles result from addition; skip reverse with < */
+    /* Add edges if no cycles result from addition; skip reverse */
     for (auto& e: edges){
-        if (findSet(e->orig) < findSet(e->dest)){
-            linkSets(e->orig, e->dest);
+        auto origParent = findSet(e->orig);
+        auto destParent = findSet(e->dest);
+        if (origParent < destParent){
+            linkSets(origParent, destParent);
             e->selected = true;
             e->reverse->selected = true;
         }
     }
 
     /* Construct paths */
+    vertexSet.at(0)->path = nullptr;
     dfsKruskalPath(vertexSet.at(0));
 
     return vertexSet;
@@ -331,9 +335,10 @@ template <class T>
 void Graph<T>::dfsKruskalPath(Vertex<T> *v) {
     v->visited = true;
     for (auto& e : v->adj){
-        if (!e->selected) continue;
-        e->dest->path = e->orig;
-        if (!e->dest->visited) dfsKruskalPath(e->dest);
+        if (!e->dest->visited && e->selected){
+            e->dest->path = e->orig;
+            dfsKruskalPath(e->dest);
+        }
     }
 }
 
