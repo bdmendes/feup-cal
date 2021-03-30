@@ -9,6 +9,7 @@
 #include <limits>
 #include <algorithm>
 #include <unordered_set>
+#include <iostream>
 #include "MutablePriorityQueue.h"
 
 template <class T> class Edge;
@@ -267,7 +268,7 @@ void Graph<T>::makeSet(Vertex<T> * x) {
 template <class T>
 void Graph<T>::linkSets(Vertex<T> * x, Vertex<T> * y) {
 	if (x->rank > y->rank)
-		y->path = x;
+        y->path = x;
 	else {
 		x->path = y;
 		if (x->rank == y->rank)
@@ -291,7 +292,35 @@ Vertex<T> * Graph<T>::findSet(Vertex<T> * x) {
  */
 template <class T>
 std::vector<Vertex<T>*> Graph<T>::calculateKruskal() {
-    // TODO
+    /* Make all vertices the parent of a distinct set */
+    for (auto& v: vertexSet){
+        makeSet(v);
+    }
+
+    /* List sorted edges */
+    std::vector<Edge<T>*> edges;
+    for (auto& v: vertexSet){
+        for (auto& e: v->adj){
+            e->selected = false;
+            edges.push_back(e);
+        }
+    }
+    std::sort(edges.begin(), edges.end(), [](const Edge<T>* e1, const Edge<T>* e2){
+        return e1->weight < e2->weight;
+    });
+
+    /* Add edges if no cycles result from addition; skip reverse with < */
+    for (auto& e: edges){
+        if (findSet(e->orig) < findSet(e->dest)){
+            linkSets(e->orig, e->dest);
+            e->selected = true;
+            e->reverse->selected = true;
+        }
+    }
+
+    /* Construct paths */
+    dfsKruskalPath(vertexSet.at(0));
+
     return vertexSet;
 }
 
@@ -300,7 +329,12 @@ std::vector<Vertex<T>*> Graph<T>::calculateKruskal() {
  */
 template <class T>
 void Graph<T>::dfsKruskalPath(Vertex<T> *v) {
-    //TODO
+    v->visited = true;
+    for (auto& e : v->adj){
+        if (!e->selected) continue;
+        e->dest->path = e->orig;
+        if (!e->dest->visited) dfsKruskalPath(e->dest);
+    }
 }
 
 #endif /* GRAPH_H_ */
