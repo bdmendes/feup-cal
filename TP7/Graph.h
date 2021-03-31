@@ -266,7 +266,7 @@ void Graph<T>::makeSet(Vertex<T> * x) {
 }
 
 /**
- * Link two parent nodes into one set. Middle tree nodes are undefined behavior.
+ * Link two nodes into one set.
  */
 template <class T>
 void Graph<T>::linkSets(Vertex<T> * x, Vertex<T> * y) {
@@ -280,11 +280,13 @@ void Graph<T>::linkSets(Vertex<T> * x, Vertex<T> * y) {
 }
 
 /**
- * Find parent node of a disjoint set.
+ * Find parent node of a disjoint set, performing path compression.
  */
 template <class T>
 Vertex<T> * Graph<T>::findSet(Vertex<T> * x) {
-	return x == x->path ? x->path : findSet(x->path);
+	if (x != x->path)
+	    x->path = findSet(x->path);
+	return x->path;
 }
 
 /**
