@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 project(CAL-TP_classes)
+include(CTest)
 
 # Build the Google tests
 set(GOOGLETEST_PATH lib/googletest-master)
@@ -64,3 +65,11 @@ target_link_libraries(TP4 gtest_main gmock_main)
 target_link_libraries(TP5 gtest_main gmock_main)
 target_link_libraries(TP6 gtest_main gmock_main)
 target_link_libraries(TP7 gtest_main gmock_main)
+
+add_test(NAME TP1 COMMAND TP7)
+add_test(NAME TP2 COMMAND TP7)
+add_test(NAME TP3 COMMAND TP7)
+add_test(NAME TP4 COMMAND TP7)
+add_test(NAME TP5 COMMAND TP7)
+add_test(NAME TP6 COMMAND TP7)
+add_test(NAME TP7 COMMAND TP7)
