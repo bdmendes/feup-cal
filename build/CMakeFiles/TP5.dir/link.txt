@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/TP5.dir/main.cpp.o CMakeFiles/TP5.dir/TP5/Person.cpp.o CMakeFiles/TP5.dir/TP5/ex1.cpp.o CMakeFiles/TP5.dir/TP5/ex2.cpp.o CMakeFiles/TP5.dir/TP5/ex3.cpp.o -o TP5  lib/libgtest_main.a lib/libgmock_main.a lib/libgmock.a lib/libgtest.a -lpthread 
