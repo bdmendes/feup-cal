@@ -1,0 +1,57 @@
+name: lib-win64
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      SFML_PATH: C:/sfml/SFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit/SFML-2.5.1
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install compiler
+      shell: cmd
+      run: |
+        C:
+        cd C:\
+        mkdir mingw-w64
+        cd mingw-w64
+        curl -L https://www.dropbox.com/s/u51ejh08x3velu4/x86_64-7.3.0-release-posix-seh-rt_v5-rev0.7z?dl=1 --output x86_64-7.3.0-release-posix-seh-rt_v5-rev0.7z
+        7z x x86_64-7.3.0-release-posix-seh-rt_v5-rev0.7z -y -ox86_64-7.3.0-release-posix-seh-rt_v5-rev0
+
+    - name: Install SFML
+      shell: cmd
+      run: |
+        C:
+        cd C:\
+        mkdir sfml
+        cd sfml
+        curl -L https://www.sfml-dev.org/files/SFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit.zip --output SFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit.zip
+        7z x SFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit.zip -y -oSFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit
+
+    - name: Checkout submodules
+      shell: cmd
+      run: |
+        git submodule sync --recursive
+        git submodule update --init --force --recursive --depth=1
+    
+    - name: CMake
+      shell: cmd
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G "MinGW Makefiles" -D CMAKE_CXX_COMPILER=C:/mingw-w64/x86_64-7.3.0-release-posix-seh-rt_v5-rev0/mingw64/bin/g++.exe
+        cmake --build .
+
+    - name: Compile example
+      run: |
+        cd example
+        mkdir build
+        cd build
+        cmake .. -G "MinGW Makefiles" -D CMAKE_CXX_COMPILER=C:/mingw-w64/x86_64-7.3.0-release-posix-seh-rt_v5-rev0/mingw64/bin/g++.exe
+        cmake --build .
