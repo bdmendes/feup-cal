@@ -31,6 +31,9 @@ file(GLOB TP7_FILES CONFIGURE_DEPENDS
 file(GLOB TP8_FILES CONFIGURE_DEPENDS
         "TP8/*.cpp"
         )
+file(GLOB TP9_FILES CONFIGURE_DEPENDS
+        "TP9/*.cpp"
+        )
 
 add_executable(TP1
         main.cpp
@@ -64,6 +67,10 @@ add_executable(TP8
         main.cpp
         ${TP8_FILES}
         )
+add_executable(TP9
+        main.cpp
+        ${TP9_FILES}
+        )
 
 target_link_libraries(TP1 gtest_main gmock_main)
 target_link_libraries(TP2 gtest_main gmock_main)
@@ -73,6 +80,7 @@ target_link_libraries(TP5 gtest_main gmock_main)
 target_link_libraries(TP6 gtest_main gmock_main)
 target_link_libraries(TP7 gtest_main gmock_main)
 target_link_libraries(TP8 gtest_main gmock_main)
+target_link_libraries(TP9 gtest_main gmock_main)
 
 add_test(NAME TP1 COMMAND TP7)
 add_test(NAME TP2 COMMAND TP7)
@@ -82,3 +90,4 @@ add_test(NAME TP5 COMMAND TP7)
 add_test(NAME TP6 COMMAND TP7)
 add_test(NAME TP7 COMMAND TP7)
 add_test(NAME TP8 COMMAND TP8)
+add_test(NAME TP9 COMMAND TP9)
