@@ -2,9 +2,17 @@ cmake_minimum_required(VERSION 3.17)
 project(CAL-TP_classes)
 include(CTest)
 
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 # Build the Google tests
 set(GOOGLETEST_PATH lib/googletest-master)
 add_subdirectory(${GOOGLETEST_PATH})
+
+# Build GraphViewerCpp
+set(GRAPHVIEWERCPP_PATH lib/GraphViewerCpp)
+add_subdirectory(${GRAPHVIEWERCPP_PATH})
+include_directories(${GRAPHVIEWERCPP_PATH}/include)
 
 # Add the source files of each TP class
 file(GLOB TP1_FILES CONFIGURE_DEPENDS
@@ -28,8 +36,14 @@ file(GLOB TP6_FILES CONFIGURE_DEPENDS
 file(GLOB TP7_FILES CONFIGURE_DEPENDS
         "TP7/*.cpp"
         )
+file(GLOB TP7_GRAPHVIEWER_FILES CONFIGURE_DEPENDS
+        "TP7_graphviewer/*.cpp"
+        )
 file(GLOB TP8_FILES CONFIGURE_DEPENDS
         "TP8/*.cpp"
+        )
+file(GLOB TP9_FILES CONFIGURE_DEPENDS
+        "TP9/*.cpp"
         )
 
 add_executable(TP1
@@ -60,9 +74,16 @@ add_executable(TP7
         main.cpp
         ${TP7_FILES}
         )
+add_executable(TP7_graphviewer
+        ${TP7_GRAPHVIEWER_FILES}
+        )
 add_executable(TP8
         main.cpp
         ${TP8_FILES}
+        )
+add_executable(TP9
+        main.cpp
+        ${TP9_FILES}
         )
 
 target_link_libraries(TP1 gtest_main gmock_main)
@@ -72,7 +93,9 @@ target_link_libraries(TP4 gtest_main gmock_main)
 target_link_libraries(TP5 gtest_main gmock_main)
 target_link_libraries(TP6 gtest_main gmock_main)
 target_link_libraries(TP7 gtest_main gmock_main)
+target_link_libraries(TP7_graphviewer graphviewer)
 target_link_libraries(TP8 gtest_main gmock_main)
+target_link_libraries(TP9 gtest_main gmock_main)
 
 add_test(NAME TP1 COMMAND TP7)
 add_test(NAME TP2 COMMAND TP7)
@@ -82,3 +105,4 @@ add_test(NAME TP5 COMMAND TP7)
 add_test(NAME TP6 COMMAND TP7)
 add_test(NAME TP7 COMMAND TP7)
 add_test(NAME TP8 COMMAND TP8)
+add_test(NAME TP9 COMMAND TP9)
