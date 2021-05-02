@@ -6,6 +6,12 @@ using namespace std;
 using Node = GraphViewer::Node;
 using Edge = GraphViewer::Edge;
 
+void boostGraphViewerPerformance(GraphViewer& gv){
+    gv.setEnabledNodes(false); // Disable node drawing
+    gv.setEnabledEdgesText(false); // Disable edge text drawing
+    gv.setZipEdges(true); // Condensate edges into single object
+}
+
 void ex4() {
     GraphViewer gv;
     gv.setScale(1.0/4000.0);
@@ -38,7 +44,7 @@ void ex4() {
             0.8
     );
 
-    // TODO
+    boostGraphViewerPerformance(gv);
 
     gv.createWindow(1600, 900);
     gv.join();
