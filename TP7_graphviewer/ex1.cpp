@@ -4,7 +4,7 @@ using namespace std;
 using Node = GraphViewer::Node;
 using Edge = GraphViewer::Edge;
 
-void addNetwork(GraphViewer& gv){
+void addNetwork1(GraphViewer& gv){
     /* Create blue vertex with ID 0 at (200,300) */
     Node &node0 = gv.addNode(0, sf::Vector2f(200, 300));
     node0.setColor(GraphViewer::BLUE);
@@ -29,6 +29,6 @@ void ex1() {
     GraphViewer gv;
     gv.setCenter(sf::Vector2f(300, 300));
     gv.createWindow(600, 600);
-    addNetwork(gv);
+    addNetwork1(gv);
     gv.join();
 }
